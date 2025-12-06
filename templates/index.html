@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFind - Lost & Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<style>
+/* Body & Background */
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: url("https://www.idealtech.edu.in/website/assets/images/home/ideal_bg.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: #e0e0e0;
+    font-size: 16px;
+}
+
+/* Header */
+h1 {
+    text-align: center;
+    padding: 25px 10px;
+    color: #000000ff;
+    font-size: 2.2rem;
+    font-family: monaco, monospace;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+
+/* Add Item Form - Vertical container, 2 fields per row, semi-transparent */
+.add-form {
+    width: 600px;
+    margin: 20px auto 40px;
+    padding: 20px;
+    background: rgba(0,0,0,0.45); /* semi-transparent */
+    border-radius: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* two fields per row */
+    gap: 15px 20px;
+    border: 1px solid rgba(255,255,255,0.2); /* subtle border */
+    backdrop-filter: blur(10px); /* blur behind */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4); /* soft shadow */
+}
+
+.add-form input, .add-form textarea, .add-form button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    font-size: 16px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* Description textarea spans full width */
+.add-form textarea { grid-column: span 2; resize: vertical; min-height: 80px; }
+
+/* Submit button spans full width */
+.add-form button {
+    background: linear-gradient(45deg, #ff6a00, #ee0979);
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    grid-column: span 2;
+}
+
+.add-form button:hover {
+    background: linear-gradient(45deg, #ee0979, #ff6a00);
+    transform: scale(1.05);
+}
+
+/* Container for items */
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Card styles */
+.card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(0,0,0,0.5);
+    border-radius: 12px;
+    width: 300px;
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+.card:hover { transform: translateY(-5px); }
+
+.card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Card Content */
+.card-content { padding: 10px; }
+.card-content p { margin: 5px 0; }
+
+/* Badges & Buttons */
+.badge { display: inline-block; padding:5px 10px; border-radius:12px; font-size:14px; }
+.found { background:#28a745; }
+.lost { background:#fd7e14; }
+
+.mark-found-btn { margin:0; padding:8px 12px; font-size:14px; border-radius:12px; background:#28a745; color:#fff; cursor:pointer; }
+.mark-found-btn:hover { background:#1e7e34; }
+
+.delete-btn { margin:0; padding:8px 12px; font-size:14px; border-radius:12px; background:#dc3545; color:#fff; cursor:pointer; }
+.delete-btn:hover { background:#a71d2a; }
+
+.Responses-box {
+  background: rgba(0,0,0,0.3); border-radius:12px; padding:8px; margin-top:8px;
+  font-size:14px; max-height:80px; overflow-y:auto;
+}
+
+/* Modal */
+#imgModal {
+  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999;
+}
+
+#imgModal img { max-width:95%; max-height:80%; border-radius:12px; }
+#imgModal .close-btn { position:absolute; top:20px; right:20px; font-size:35px; color:#fff; cursor:pointer; }
+
+@media (max-width: 650px) {
+    .add-form { grid-template-columns: 1fr; }
+    .add-form textarea, .add-form button { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<h1>CampusFind - Lost & Found Made Simple</h1>
+
+<!-- Add Item Form -->
+<form id="addItemForm" class="add-form" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="text" name="roll" placeholder="Roll Number" required>
+    <input type="text" name="phone" placeholder="Phone Number" required>
+    <input type="text" name="item" placeholder="Lost/Found Item" required>
+    <textarea name="description" placeholder="Item Description / Where did you lose it?" required></textarea>
+    <input type="file" name="image" accept="image/*">
+    <button type="submit"><i class="fas fa-plus"></i> Add Item</button>
+</form>
+
+<!-- Items Container -->
+<div id="itemsContainer" class="container"></div>
+
+<!-- Image Modal -->
+<div id="imgModal" onclick="closeModal()">
+  <span class="close-btn">&times;</span>
+  <img id="modalImage" src="">
+</div>
+
+<script>
+// Modal functions
+function openModal(src){ document.getElementById('imgModal').style.display='flex'; document.getElementById('modalImage').src=src; }
+function closeModal(){ document.getElementById('imgModal').style.display='none'; }
+
+// Load items dynamically
+function loadItems(){
+  fetch('/get_items')
+    .then(res=>res.json())
+    .then(data=>{
+      const container=document.getElementById('itemsContainer');
+      container.innerHTML='';
+      data.forEach((item,index)=>{
+        const card=document.createElement('div'); card.className='card';
+        card.innerHTML=`
+        ${item.image?`
+        <div class="image-container">
+          <img src="/static/uploads/${item.image}">
+          <div class="overlay"><button class="view-btn" onclick="openModal('/static/uploads/${item.image}')">View</button></div>
+        </div>`:''}
+        <div class="card-content">
+          <p><b>Name:</b> ${item.name}</p>
+          <p><b>Roll:</b> ${item.roll}</p>
+          <p><b>Phone:</b> ${item.phone}</p>
+          <p><b>Item:</b> ${item.item}</p>
+          <p class="description">${item.description}</p>
+          <div class="card-footer">
+            <span class="badge ${item.found?'found':'lost'}">${item.found?'Found':'Lost'}</span>
+            <div style="display:flex; gap:5px;">
+              ${!item.found?`<button class="mark-found-btn" onclick="markFound(${item.id})">Mark as Found</button>`:''}
+              <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
+            </div>
+          </div>
+          <div class="Responses-box"><b>Responses:</b><ul>${item.Responses.map(n=>`<li><b>${n.name}:</b> ${n.Response}</li>`).join('')}</ul></div>
+          <form class="Response-form" onsubmit="submitResponse(event,${item.id})">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <textarea name="Response" placeholder="Add a Response" required></textarea>
+            <button type="submit">Submit Response</button>
+          </form>
+        </div>`;
+        container.appendChild(card);
+      });
+    });
+}
+
+// Add Item Form submit
+document.getElementById('addItemForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const formData=new FormData(this);
+  fetch('/add',{method:'POST',body:formData})
+    .then(res=>res.json())
+    .then(()=>{ loadItems(); this.reset(); });
+});
+
+// Card button functions
+function markFound(id){ fetch(`/mark_found/${id}`,{method:'POST'}).then(()=>loadItems()); }
+function deleteItem(id){ if(confirm("Are you sure?")){ fetch(`/delete_item/${id}`,{method:'POST'}).then(()=>loadItems()); } }
+function submitResponse(e,id){ e.preventDefault(); const form=e.target; const data=new FormData(form); fetch(`/add_Response/${id}`,{method:'POST',body:data}).then(()=>{loadItems();form.reset();}); }
+
+// Initial load
+loadItems();
+</script>
+
+</body>
+</html>
