@@ -1,225 +1,1552 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CampusFind - Lost & Found</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<style>
-/* Body & Background */
-body {
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background: url("https://www.idealtech.edu.in/website/assets/images/home/ideal_bg.jpg") no-repeat center center fixed;
-    background-size: cover;
-    color: #e0e0e0;
-    font-size: 16px;
-}
+{% extends "base.html" %}
 
-/* Header */
-h1 {
+{% block title %}Dashboard - CampusFind{% endblock %}
+
+{% block extra_css %}
+/* Hero Section */
+.hero-section {
+    position: relative;
+    max-width: 1200px;
+    margin: 40px auto 35px;
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.55);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.03);
     text-align: center;
-    padding: 25px 10px;
-    color: #000000ff;
-    font-size: 2.2rem;
-    font-family: monaco, monospace;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    overflow: hidden;
+    animation: fadeInDown 0.8s ease-out;
 }
 
-/* Add Item Form - Vertical container, 2 fields per row, semi-transparent */
-.add-form {
-    width: 600px;
-    margin: 20px auto 40px;
-    padding: 20px;
-    background: rgba(0,0,0,0.45); /* semi-transparent */
-    border-radius: 15px;
+.hero-bubble-1 {
+    position: absolute;
+    top: -60px;
+    left: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.12) 0%, transparent 70%);
+    z-index: -1;
+    animation: floatBubble 8s infinite alternate ease-in-out;
+}
+
+.hero-bubble-2 {
+    position: absolute;
+    bottom: -60px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+    z-index: -1;
+    animation: floatBubble 10s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes floatBubble {
+    from { transform: translate(0, 0); }
+    to { transform: translate(25px, 20px); }
+}
+
+.hero-icon-box {
+    font-size: 3.5rem;
+    color: #4f46e5;
+    margin-bottom: 20px;
+    display: inline-block;
+    animation: pulseIcon 3s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+.hero-section h1 {
+    font-size: 3.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 10px 0;
+    letter-spacing: -1.5px;
+    background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: #64748b;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Stats Section */
+.stats-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* two fields per row */
-    gap: 15px 20px;
-    border: 1px solid rgba(255,255,255,0.2); /* subtle border */
-    backdrop-filter: blur(10px); /* blur behind */
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4); /* soft shadow */
-}
-
-.add-form input, .add-form textarea, .add-form button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.3);
-    font-size: 16px;
-    background: rgba(0,0,0,0.5);
-    color: #fff;
-    outline: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto 35px;
+    padding: 0 20px;
     box-sizing: border-box;
 }
 
-/* Description textarea spans full width */
-.add-form textarea { grid-column: span 2; resize: vertical; min-height: 80px; }
+.stats-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease;
+}
 
-/* Submit button spans full width */
-.add-form button {
-    background: linear-gradient(45deg, #ff6a00, #ee0979);
-    font-weight: bold;
+.stats-card:hover {
+    transform: translateY(-2px);
+}
+
+.stats-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+.stats-lost-icon {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.stats-found-icon {
+    background: #dcfce7;
+    color: #22c55e;
+}
+
+.stats-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-count {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.stats-label {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+/* Action Navigation Cards */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto 35px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.action-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    padding: 35px;
+    text-align: center;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    box-sizing: border-box;
+}
+
+.action-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.08);
+    border-color: rgba(79, 70, 229, 0.25);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.action-card.active {
+    border-color: #4f46e5;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 15px 35px rgba(79, 70, 229, 0.12);
+}
+
+.action-card-icon {
+    font-size: 3rem;
+    color: #4f46e5;
+    margin-bottom: 5px;
+    transition: transform 0.3s ease;
+}
+
+.action-card:hover .action-card-icon {
+    transform: scale(1.08);
+}
+
+.action-card h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.action-card p {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.action-card .btn-view {
+    margin-top: 10px;
+    background: #e2e8f0;
+    color: #334155;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-card:hover .btn-view {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+.action-card.active .btn-view {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+/* Quick Actions & Raised Buttons */
+.quick-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.btn-raise {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 24px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.btn-raise-lost {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+}
+
+.btn-raise-lost:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.25);
+}
+
+.btn-raise-found {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #ffffff;
+}
+
+.btn-raise-found:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
+}
+
+/* Accordion Form Transition Wrapper */
+.form-wrapper {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+    width: 100%;
+}
+
+.form-wrapper.active {
+    max-height: 1200px;
+    opacity: 1;
+    margin-bottom: 50px;
+}
+
+.form-glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    padding: 35px;
+    box-sizing: border-box;
+    width: 600px;
+    margin: 0 auto;
+}
+
+.form-glass-card h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 25px 0;
+    text-align: center;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.form-glass-card h2 i {
+    color: #4f46e5;
+}
+
+/* Form Dropdowns & Inputs */
+.add-form select, .add-form input[type="date"] {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    border: 1.5px solid #334155;
+    background: transparent;
+    color: #0f172a;
+    transition: all 0.25s ease-in-out;
+}
+
+.add-form select:focus, .add-form input[type="date"]:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.add-form select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* Responsive Grid for Cards */
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto 50px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 992px) {
+    .items-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (max-width: 650px) {
+    .items-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* Premium Airbnb Style Glass Card */
+.item-card {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+}
+
+.item-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.08);
+    border-color: rgba(79, 70, 229, 0.25);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.item-card-image-box {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.03);
+}
+
+.item-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.item-card:hover .item-card-image {
+    transform: scale(1.06);
+}
+
+.item-placeholder-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    color: #94a3b8;
+    font-size: 3rem;
+}
+
+/* Status Badges */
+.status-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    z-index: 2;
+}
+
+.badge-lost-item {
+    background: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fca5a5;
+}
+
+.badge-found-item {
+    background: #dcfce7;
+    color: #22c55e;
+    border: 1px solid #86efac;
+}
+
+.badge-recovered {
+    background: #dbeafe;
+    color: #3b82f6;
+    border: 1px solid #93c5fd;
+}
+
+/* Card Body */
+.item-card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    box-sizing: border-box;
+}
+
+.item-card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.item-card-category {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.item-card-category i {
+    color: #4f46e5;
+}
+
+.item-card-desc {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+    flex-grow: 1;
+}
+
+.read-more-btn {
+    color: #4f46e5;
+    font-weight: 600;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.read-more-btn:hover {
+    text-decoration: underline;
+}
+
+.item-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed rgba(15, 23, 42, 0.08);
+}
+
+.meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: #475569;
+}
+
+.meta-row i {
+    color: #4f46e5;
+    width: 16px;
+    text-align: center;
+}
+
+.card-responses-count {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.card-responses-count i {
+    color: #4f46e5;
+}
+
+/* Card Action Grid */
+.item-card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.item-card-actions.full-width-actions {
+    grid-template-columns: 1fr;
+}
+
+.card-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    width: 100%;
+}
+
+.btn-details {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.btn-details:hover {
+    background: #cbd5e1;
+}
+
+.btn-claim {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.btn-claim:hover {
+    background: #bbf7d0;
+}
+
+.btn-respond {
+    background: #4f46e5;
+    color: #ffffff;
+}
+
+.btn-respond:hover {
+    background: #4338ca;
+}
+
+.btn-card-mark-found {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.btn-card-mark-found:hover {
+    background: #bbf7d0;
+}
+
+.btn-card-delete {
+    background: #fee2e2;
+    color: #b91c1c;
     grid-column: span 2;
 }
 
-.add-form button:hover {
-    background: linear-gradient(45deg, #ee0979, #ff6a00);
-    transform: scale(1.05);
+.btn-card-delete:hover {
+    background: #fecaca;
 }
 
-/* Container for items */
-.container {
+/* Search Toolbar layout */
+.search-toolbar {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .search-toolbar {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+.search-input-wrapper {
+    position: relative;
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px;
+    align-items: center;
 }
 
-/* Card styles */
-.card {
+.search-input-wrapper i {
+    position: absolute;
+    left: 16px;
+    color: #94a3b8;
+}
+
+.search-toolbar input, .search-toolbar select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #cbd5e1;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(5px);
+    font-size: 14px;
+    outline: none;
+    color: #0f172a;
+    box-sizing: border-box;
+    transition: all 0.25s ease-in-out;
+}
+
+.search-toolbar input {
+    padding-left: 45px;
+}
+
+.search-toolbar input:focus, .search-toolbar select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+/* Shimmer Loading skeletons */
+.skeleton-card {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    background: rgba(0,0,0,0.5);
-    border-radius: 12px;
-    width: 300px;
-    overflow: hidden;
-    transition: transform 0.3s;
+    gap: 16px;
+    height: 380px;
+    box-sizing: border-box;
 }
 
-.card:hover { transform: translateY(-5px); }
-
-.card img {
+.skeleton-image {
     width: 100%;
-    height: 200px;
+    height: 180px;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line {
+    height: 16px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line.title { width: 65%; height: 22px; }
+.skeleton-line.meta { width: 45%; }
+.skeleton-line.desc { width: 90%; height: 40px; }
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Empty State layout */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: #94a3b8;
+    background: rgba(15, 23, 42, 0.03);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.empty-state h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.empty-state p {
+    font-size: 14.5px;
+    color: #64748b;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+}
+
+.empty-state .btn-empty-action {
+    background: #4f46e5;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    transition: all 0.2s ease;
+}
+
+.empty-state .btn-empty-action:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+/* Details Overlay Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.details-modal {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes modalSlideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #64748b;
+    z-index: 10;
+    transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 30px;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .modal-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;
+    }
+}
+
+.modal-image-box {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.03);
+    max-height: 320px;
+}
+
+.modal-image {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
-/* Card Content */
-.card-content { padding: 10px; }
-.card-content p { margin: 5px 0; }
-
-/* Badges & Buttons */
-.badge { display: inline-block; padding:5px 10px; border-radius:12px; font-size:14px; }
-.found { background:#28a745; }
-.lost { background:#fd7e14; }
-
-.mark-found-btn { margin:0; padding:8px 12px; font-size:14px; border-radius:12px; background:#28a745; color:#fff; cursor:pointer; }
-.mark-found-btn:hover { background:#1e7e34; }
-
-.delete-btn { margin:0; padding:8px 12px; font-size:14px; border-radius:12px; background:#dc3545; color:#fff; cursor:pointer; }
-.delete-btn:hover { background:#a71d2a; }
-
-.Responses-box {
-  background: rgba(0,0,0,0.3); border-radius:12px; padding:8px; margin-top:8px;
-  font-size:14px; max-height:80px; overflow-y:auto;
+.modal-placeholder-img {
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    color: #94a3b8;
+    font-size: 4rem;
+    border-radius: 16px;
 }
 
-/* Modal */
-#imgModal {
-  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999;
+.modal-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-#imgModal img { max-width:95%; max-height:80%; border-radius:12px; }
-#imgModal .close-btn { position:absolute; top:20px; right:20px; font-size:35px; color:#fff; cursor:pointer; }
+/* Browse list view title */
+.section-title-container {
+    text-align: center;
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+    border-bottom: 2.5px solid rgba(15, 23, 42, 0.05);
+    padding-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.section-title-container h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.5px;
+    display: inline-block;
+    position: relative;
+}
+
+.section-title-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: #4f46e5;
+    border-radius: 2px;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 @media (max-width: 650px) {
-    .add-form { grid-template-columns: 1fr; }
-    .add-form textarea, .add-form button { grid-column: span 1; }
+    .stats-container, .action-grid, .quick-actions, .form-glass-card {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        width: calc(100% - 40px);
+    }
+    .welcome-section h1 {
+        font-size: 2.2rem;
+    }
+    .hero-section {
+        padding: 40px 20px;
+    }
+    .hero-section h1 {
+        font-size: 2.6rem;
+    }
 }
-</style>
-</head>
-<body>
+{% endblock %}
 
-<h1>CampusFind - Lost & Found Made Simple</h1>
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-bubble-1"></div>
+    <div class="hero-bubble-2"></div>
+    <div class="hero-icon-box">
+        <i class="fa-solid fa-map-location-dot"></i>
+    </div>
+    <h1>CampusFind</h1>
+    <p class="hero-subtitle">Find what matters. Return what belongs.</p>
+</div>
 
-<!-- Add Item Form -->
-<form id="addItemForm" class="add-form" enctype="multipart/form-data">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="text" name="roll" placeholder="Roll Number" required>
-    <input type="text" name="phone" placeholder="Phone Number" required>
-    <input type="text" name="item" placeholder="Lost/Found Item" required>
-    <textarea name="description" placeholder="Item Description / Where did you lose it?" required></textarea>
-    <input type="file" name="image" accept="image/*">
-    <button type="submit"><i class="fas fa-plus"></i> Add Item</button>
-</form>
+<!-- Statistics Cards -->
+<div class="stats-container">
+    <div class="stats-card">
+        <div class="stats-icon stats-lost-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="stats-info">
+            <span class="stats-count" id="lostItemsCount">0</span>
+            <span class="stats-label">Lost Items</span>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-icon stats-found-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="stats-info">
+            <span class="stats-count" id="foundItemsCount">0</span>
+            <span class="stats-label">Found Items</span>
+        </div>
+    </div>
+</div>
 
-<!-- Items Container -->
-<div id="itemsContainer" class="container"></div>
+<!-- Navigation Cards -->
+<div class="action-grid">
+    <div class="action-card" id="lostCard" onclick="switchSection('lost')">
+        <div class="action-card-icon"><i class="fa-solid fa-box-open"></i></div>
+        <h3>Lost Items</h3>
+        <p>Browse every reported lost item on campus.</p>
+        <button class="btn-view">View Lost Items</button>
+    </div>
+    <div class="action-card" id="foundCard" onclick="switchSection('found')">
+        <div class="action-card-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        <h3>Found Items</h3>
+        <p>Browse every reported found item waiting to be claimed.</p>
+        <button class="btn-view">View Found Items</button>
+    </div>
+</div>
 
-<!-- Image Modal -->
+<!-- Quick Action Buttons -->
+<div class="quick-actions">
+    <button class="btn-raise btn-raise-lost" onclick="toggleForm('lost')">
+        <i class="fa-solid fa-circle-plus"></i> Raise a Lost Item
+    </button>
+    <button class="btn-raise btn-raise-found" onclick="toggleForm('found')">
+        <i class="fa-solid fa-circle-plus"></i> Raise a Found Item
+    </button>
+</div>
+
+<!-- Collapsible AddLostForm Wrapper -->
+<div class="form-wrapper" id="lostFormWrapper">
+    <div class="form-glass-card">
+        <h2><i class="fa-solid fa-triangle-exclamation"></i> Report a Lost Item</h2>
+        <form id="addLostForm" class="add-form" enctype="multipart/form-data">
+            <input type="hidden" name="type" value="Lost">
+            <input type="text" name="name" value="{{ session.get('name', '') }}" required readonly placeholder="Your Name">
+            <input type="text" name="roll" value="{{ session.get('roll_number', '') }}" required readonly placeholder="Roll Number">
+            <input type="text" name="phone" value="{{ session.get('phone', '') }}" required readonly placeholder="Phone Number">
+            <input type="text" name="item" placeholder="Lost Item Name" required>
+            <textarea name="description" placeholder="Where did you lose it? Describe item characteristics..." required></textarea>
+            <input type="file" name="image" accept="image/*">
+            <button type="submit"><i class="fas fa-plus"></i> Submit Lost Report</button>
+        </form>
+    </div>
+</div>
+
+<!-- Collapsible AddFoundForm Wrapper -->
+<div class="form-wrapper" id="foundFormWrapper">
+    <div class="form-glass-card">
+        <h2><i class="fa-solid fa-circle-check"></i> Report a Found Item</h2>
+        <form id="addFoundForm" class="add-form" enctype="multipart/form-data">
+            <input type="hidden" name="type" value="Found">
+            <input type="text" name="name" value="{{ session.get('name', '') }}" required readonly placeholder="Your Name">
+            <input type="text" name="roll" value="{{ session.get('roll_number', '') }}" required readonly placeholder="Roll Number">
+            <input type="text" name="phone" value="{{ session.get('phone', '') }}" required readonly placeholder="Phone Number">
+            <input type="text" name="item" placeholder="Found Item Name" required>
+            
+            <select name="category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Books & Stationery">Books & Stationery</option>
+                <option value="Cards & Wallets">Cards & Wallets</option>
+                <option value="Clothing & Accessories">Clothing & Accessories</option>
+                <option value="Keys">Keys</option>
+                <option value="Others">Others</option>
+            </select>
+            
+            <input type="text" name="location" placeholder="Location Found (e.g. Library, Block C)" required>
+            <input type="date" name="date" required>
+            
+            <textarea name="description" placeholder="Describe the item (color, size, brand)..." required></textarea>
+            <input type="file" name="image" accept="image/*">
+            <button type="submit"><i class="fas fa-plus"></i> Submit Found Report</button>
+        </form>
+    </div>
+</div>
+
+<!-- Search & Filter Bar -->
+<div class="search-toolbar">
+    <div class="search-input-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search items by name or description..." oninput="filterAndSortItems()">
+    </div>
+    
+    <select id="categoryFilter" onchange="filterAndSortItems()">
+        <option value="All">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Books & Stationery">Books & Stationery</option>
+        <option value="Cards & Wallets">Cards & Wallets</option>
+        <option value="Clothing & Accessories">Clothing & Accessories</option>
+        <option value="Keys">Keys</option>
+        <option value="Others">Others</option>
+    </select>
+    
+    <select id="statusFilter" onchange="filterAndSortItems()">
+        <option value="All">All Statuses</option>
+        <option value="Active">Active (Unresolved)</option>
+        <option value="Resolved">Resolved (Found/Claimed)</option>
+    </select>
+    
+    <select id="sortOrder" onchange="filterAndSortItems()">
+        <option value="Newest">Newest First</option>
+        <option value="Oldest">Oldest First</option>
+        <option value="Alphabetical">Alphabetical (A-Z)</option>
+    </select>
+</div>
+
+<!-- View Section Title -->
+<div class="section-title-container">
+    <h2 id="sectionTitle">Lost Items</h2>
+</div>
+
+<!-- Items Container Grid -->
+<div id="itemsContainer" class="items-grid"></div>
+
+<!-- Image Modal (Dynamic Zoom) -->
 <div id="imgModal" onclick="closeModal()">
   <span class="close-btn">&times;</span>
   <img id="modalImage" src="">
 </div>
 
+<!-- View Details Glass Modal Dialog -->
+<div class="modal-overlay" id="detailsModalOverlay" onclick="handleOverlayClick(event)">
+    <div class="details-modal">
+        <button class="modal-close-btn" onclick="closeDetailsModal()">&times;</button>
+        <div class="modal-grid" id="modalDetailsContent">
+            <!-- Loaded dynamically in JS -->
+        </div>
+    </div>
+</div>
+
 <script>
-// Modal functions
+let activeSection = 'lost'; // 'lost' or 'found'
+let prevLostCount = 0;
+let prevFoundCount = 0;
+let allItems = [];
+
+const currentUserId = "{{ session.user_id or '' }}";
+const currentUserRole = "{{ session.role or '' }}";
+const currentUserName = "{{ session.name or '' }}";
+
+const currentUser = {
+    id: currentUserId,
+    role: currentUserRole,
+    name: currentUserName
+};
+
+// Modal zoom functions
 function openModal(src){ document.getElementById('imgModal').style.display='flex'; document.getElementById('modalImage').src=src; }
 function closeModal(){ document.getElementById('imgModal').style.display='none'; }
 
+// Details Modal handlers
+function handleOverlayClick(e) {
+    if (e.target === document.getElementById('detailsModalOverlay')) {
+        closeDetailsModal();
+    }
+}
+
+// Switch section view (Lost vs Found)
+function switchSection(section) {
+    activeSection = section;
+    
+    // Toggle active class on cards
+    document.getElementById('lostCard').classList.toggle('active', section === 'lost');
+    document.getElementById('foundCard').classList.toggle('active', section === 'found');
+    
+    // Update title
+    document.getElementById('sectionTitle').innerText = section === 'lost' ? 'Lost Items' : 'Found Items';
+    
+    // Reset filters
+    document.getElementById('searchInput').value = '';
+    document.getElementById('categoryFilter').value = 'All';
+    document.getElementById('statusFilter').value = 'All';
+    document.getElementById('sortOrder').value = 'Newest';
+    
+    filterAndSortItems();
+}
+
+// Expand form (Accordion action)
+function toggleForm(formType) {
+    const lostForm = document.getElementById('lostFormWrapper');
+    const foundForm = document.getElementById('foundFormWrapper');
+    
+    if (formType === 'lost') {
+        const isActive = lostForm.classList.contains('active');
+        lostForm.classList.toggle('active', !isActive);
+        foundForm.classList.remove('active'); // auto-collapse Found form
+        
+        if (!isActive) {
+            setTimeout(() => {
+                lostForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    } else if (formType === 'found') {
+        const isActive = foundForm.classList.contains('active');
+        foundForm.classList.toggle('active', !isActive);
+        lostForm.classList.remove('active'); // auto-collapse Lost form
+        
+        if (!isActive) {
+            setTimeout(() => {
+                foundForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+    }
+}
+
+// Animate Stats counter
+function animateCounter(id, target, startVal) {
+    const el = document.getElementById(id);
+    let start = startVal;
+    if (start === target) {
+        el.innerText = target;
+        return;
+    }
+    const duration = 600; // ms
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = progress * (2 - progress); // easeOutQuad
+        const current = Math.floor(start + ease * (target - start));
+        el.innerText = current;
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            el.innerText = target;
+        }
+    }
+    requestAnimationFrame(update);
+}
+
 // Load items dynamically
 function loadItems(){
+  // Display skeleton loaders
+  const container = document.getElementById('itemsContainer');
+  container.innerHTML = `
+    <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
+    <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
+    <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
+  `;
+  
   fetch('/get_items')
     .then(res=>res.json())
     .then(data=>{
-      const container=document.getElementById('itemsContainer');
-      container.innerHTML='';
-      data.forEach((item,index)=>{
-        const card=document.createElement('div'); card.className='card';
-        card.innerHTML=`
-        ${item.image?`
-        <div class="image-container">
-          <img src="/static/uploads/${item.image}">
-          <div class="overlay"><button class="view-btn" onclick="openModal('/static/uploads/${item.image}')">View</button></div>
-        </div>`:''}
-        <div class="card-content">
-          <p><b>Name:</b> ${item.name}</p>
-          <p><b>Roll:</b> ${item.roll}</p>
-          <p><b>Phone:</b> ${item.phone}</p>
-          <p><b>Item:</b> ${item.item}</p>
-          <p class="description">${item.description}</p>
-          <div class="card-footer">
-            <span class="badge ${item.found?'found':'lost'}">${item.found?'Found':'Lost'}</span>
-            <div style="display:flex; gap:5px;">
-              ${!item.found?`<button class="mark-found-btn" onclick="markFound(${item.id})">Mark as Found</button>`:''}
-              <button class="delete-btn" onclick="deleteItem(${item.id})">Delete</button>
-            </div>
-          </div>
-          <div class="Responses-box"><b>Responses:</b><ul>${item.Responses.map(n=>`<li><b>${n.name}:</b> ${n.Response}</li>`).join('')}</ul></div>
-          <form class="Response-form" onsubmit="submitResponse(event,${item.id})">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <textarea name="Response" placeholder="Add a Response" required></textarea>
-            <button type="submit">Submit Response</button>
-          </form>
-        </div>`;
-        container.appendChild(card);
-      });
+      allItems = data;
+      
+      // Calculate active statistics
+      const totalLost = data.filter(i => i.type === 'Lost' || (!i.type && !i.found)).length;
+      const totalFound = data.filter(i => i.type === 'Found' || (!i.type && i.found)).length;
+      
+      // Animate counts
+      animateCounter('lostItemsCount', totalLost, prevLostCount);
+      animateCounter('foundItemsCount', totalFound, prevFoundCount);
+      
+      prevLostCount = totalLost;
+      prevFoundCount = totalFound;
+      
+      filterAndSortItems();
     });
 }
 
-// Add Item Form submit
-document.getElementById('addItemForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const formData=new FormData(this);
-  fetch('/add',{method:'POST',body:formData})
-    .then(res=>res.json())
-    .then(()=>{ loadItems(); this.reset(); });
-});
+// Filter and sort items dynamically on the client
+function filterAndSortItems() {
+    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const categoryVal = document.getElementById('categoryFilter').value;
+    const statusVal = document.getElementById('statusFilter').value;
+    const sortVal = document.getElementById('sortOrder').value;
+    const container = document.getElementById('itemsContainer');
+    
+    // 1. Filter by section (lost vs found)
+    const isFoundSection = activeSection === 'found';
+    let filtered = allItems.filter(item => {
+        const isFoundType = item.type === 'Found' || (!item.type && item.found);
+        return isFoundSection ? isFoundType : !isFoundType;
+    });
+    
+    // 2. Filter by search input
+    if (searchVal) {
+        filtered = filtered.filter(item => 
+            (item.item || item.title || '').toLowerCase().includes(searchVal) || 
+            (item.description || '').toLowerCase().includes(searchVal)
+        );
+    }
+    
+    // 3. Filter by category
+    if (categoryVal !== 'All') {
+        filtered = filtered.filter(item => item.category === categoryVal);
+    }
+    
+    // 4. Filter by status
+    if (statusVal === 'Active') {
+        filtered = filtered.filter(item => !item.found);
+    } else if (statusVal === 'Resolved') {
+        filtered = filtered.filter(item => item.found);
+    }
+    
+    // 5. Sort items
+    if (sortVal === 'Newest') {
+        filtered.sort((a, b) => String(b.id).localeCompare(String(a.id)));
+    } else if (sortVal === 'Oldest') {
+        filtered.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+    } else if (sortVal === 'Alphabetical') {
+        filtered.sort((a, b) => (a.item || a.title || '').localeCompare(b.item || b.title || ''));
+    }
+    
+    // Render
+    container.innerHTML = '';
+    
+    if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state-icon"><i class="fa-solid fa-folder-open"></i></div>
+            <h3>No Items Found</h3>
+            <p>No reports match your filters or search keywords.</p>
+            <button class="btn-empty-action" onclick="toggleForm('${activeSection}')">Report ${activeSection === 'lost' ? 'Lost' : 'Found'} Item</button>
+          </div>
+        `;
+        return;
+    }
+    
+    filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        
+        // Image box element
+        let imgHTML = '';
+        if (item.image) {
+            imgHTML = `<div class="item-card-image-box">
+              <img src="/static/uploads/${item.image}" class="item-card-image">
+            </div>`;
+        } else {
+            imgHTML = `<div class="item-card-image-box">
+              <div class="item-placeholder-img"><i class="fa-solid fa-box"></i></div>
+            </div>`;
+        }
+        
+        // Badge tag
+        let badgeClass = 'badge-lost-item';
+        let badgeText = 'Lost';
+        if (item.found) {
+            badgeText = activeSection === 'lost' ? 'Recovered' : 'Claimed';
+            badgeClass = 'badge-recovered';
+        } else {
+            badgeText = item.type === 'Found' ? 'Found' : 'Lost';
+            badgeClass = item.type === 'Found' ? 'badge-found-item' : 'badge-lost-item';
+        }
+        const badgeHTML = `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
+        
+        // Show control checks
+        const ownerIdStr = String(item.creator_id || item.owner_id || '');
+        const currentUserIdStr = String(currentUser.id || '');
+        const showMarkFound = !item.found && (currentUser.role === 'admin' || currentUser.role === 'security' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+        const showDelete = (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
 
-// Card button functions
+        const categoryHTML = item.category ? `<div class="item-card-category"><i class="fa-solid fa-tag"></i> ${item.category}</div>` : '';
+        const locHTML = item.location ? `<div class="meta-row"><i class="fa-solid fa-location-dot"></i> 📍 ${item.location}</div>` : '';
+        const dateHTML = item.date ? `<div class="meta-row"><i class="fa-solid fa-calendar-days"></i> 📅 ${item.date}</div>` : '';
+        
+        // Description preview (max 120 chars)
+        const maxLen = 120;
+        const itemDesc = item.description || '';
+        const isLong = itemDesc.length > maxLen;
+        const descText = isLong ? itemDesc.substring(0, maxLen) + '...' : itemDesc;
+        const readMoreBtn = isLong ? `<button class="read-more-btn" onclick="openDetailsModal('${item.id}')">Read More</button>` : '';
+
+        const itemResponses = item.Responses || item.responses || [];
+        const responsesCountText = `${itemResponses.length} Response${itemResponses.length === 1 ? '' : 's'}`;
+
+        // Action grid buttons template
+        let actButtons = '';
+        if (activeSection === 'lost') {
+            actButtons = `
+              <button class="card-action-btn btn-details" onclick="openDetailsModal('${item.id}')"><i class="fa-solid fa-eye"></i> View</button>
+              <button class="card-action-btn btn-respond" onclick="openDetailsModal('${item.id}')"><i class="fa-solid fa-reply"></i> Respond</button>
+              ${showMarkFound ? `<button class="card-action-btn btn-card-mark-found" onclick="markFound('${item.id}')"><i class="fa-solid fa-check"></i> Found</button>` : ''}
+            `;
+        } else {
+            actButtons = `
+              <button class="card-action-btn btn-details" onclick="openDetailsModal('${item.id}')"><i class="fa-solid fa-eye"></i> View</button>
+              <button class="card-action-btn btn-claim" onclick="openDetailsModal('${item.id}')"><i class="fa-solid fa-hand-holding-heart"></i> Claim</button>
+            `;
+        }
+        
+        const deleteBtnHTML = showDelete ? `<button class="card-action-btn btn-card-delete" onclick="deleteItem('${item.id}')"><i class="fa-solid fa-trash"></i> Delete</button>` : '';
+
+        card.innerHTML = `
+          ${badgeHTML}
+          ${imgHTML}
+          <div class="item-card-body">
+            ${categoryHTML}
+            <h4 class="item-card-title">${item.item || item.title || ''}</h4>
+            <p class="item-card-desc">${descText}${readMoreBtn}</p>
+            <div class="item-card-meta">
+              ${locHTML}
+              ${dateHTML}
+            </div>
+            <div class="card-responses-count">
+              <i class="fa-solid fa-comments"></i> <span>${responsesCountText}</span>
+            </div>
+            <div class="item-card-actions ${showDelete ? '' : 'full-width-actions'}">
+              ${actButtons}
+              ${deleteBtnHTML}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Expand details modal view
+function openDetailsModal(itemId) {
+    const item = allItems.find(i => String(i.id) === String(itemId) || String(i._id) === String(itemId));
+    if (!item) return;
+    
+    const content = document.getElementById('modalDetailsContent');
+    
+    let imgHTML = '';
+    if (item.image) {
+        imgHTML = `<div class="modal-image-box">
+          <img src="/static/uploads/${item.image}" class="modal-image">
+        </div>`;
+    } else {
+        imgHTML = `<div class="modal-placeholder-img"><i class="fa-solid fa-box-open"></i></div>`;
+    }
+    
+    const catHTML = item.category ? `<p style="margin: 0; font-size:14px;"><i class="fa-solid fa-tag" style="color:#4f46e5;"></i> <b>Category:</b> ${item.category}</p>` : '';
+    const locHTML = item.location ? `<p style="margin: 0; font-size:14px;"><i class="fa-solid fa-location-dot" style="color:#4f46e5;"></i> <b>Location:</b> ${item.location}</p>` : '';
+    const dateHTML = item.date ? `<p style="margin: 0; font-size:14px;"><i class="fa-solid fa-calendar-days" style="color:#4f46e5;"></i> <b>Date:</b> ${item.date}</p>` : '';
+    
+    let statusText = item.found ? 'Resolved (Recovered/Claimed)' : (item.type === 'Found' ? 'Found' : 'Lost');
+    let statusClass = item.found ? 'found' : (item.type === 'Found' ? 'found' : 'lost');
+    
+    const ownerIdStr = String(item.creator_id || item.owner_id || '');
+    const currentUserIdStr = String(currentUser.id || '');
+    const showMarkFound = !item.found && (currentUser.role === 'admin' || currentUser.role === 'security' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+    const showDelete = (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+    const itemResponses = item.Responses || item.responses || [];
+
+    content.innerHTML = `
+      <div>
+        ${imgHTML}
+        <div style="margin-top: 20px; display:flex; flex-direction:column; gap:12px;">
+           <span class="badge ${statusClass}" style="width:fit-content;">${statusText}</span>
+           <h3 style="font-size:1.6rem; font-weight:800; color:#0f172a; margin:0; letter-spacing:-0.5px;">${item.item || item.title || ''}</h3>
+           <div style="display:flex; flex-direction:column; gap:6px; color:#475569;">
+               ${catHTML}
+               ${locHTML}
+               ${dateHTML}
+           </div>
+        </div>
+      </div>
+      
+      <div class="modal-info-col">
+        <div>
+           <h4 style="font-size:1.05rem; font-weight:700; color:#0f172a; margin:0 0 8px 0;">Description</h4>
+           <p style="font-size:14px; color:#475569; line-height:1.6; margin:0;">${item.description || ''}</p>
+        </div>
+        
+        <div style="background:rgba(15, 23, 42, 0.02); border-radius:12px; padding:15px; border-left:4px solid #4f46e5; border-top:1px solid rgba(0,0,0,0.02); border-right:1px solid rgba(0,0,0,0.02); border-bottom:1px solid rgba(0,0,0,0.02);">
+           <h4 style="font-size:0.95rem; font-weight:700; color:#0f172a; margin:0 0 8px 0;">Reporter Details</h4>
+           <p style="font-size:13px; color:#475569; margin:0 0 5px 0;"><i class="fa-solid fa-user" style="color:#4f46e5; margin-right:4px;"></i> Name: ${item.name || item.owner_name || ''}</p>
+           <p style="font-size:13px; color:#475569; margin:0 0 5px 0;"><i class="fa-solid fa-id-card" style="color:#4f46e5; margin-right:4px;"></i> ID: ${item.roll || ''}</p>
+           <p style="font-size:13px; color:#475569; margin:0;"><i class="fa-solid fa-phone" style="color:#4f46e5; margin-right:4px;"></i> Phone: ${item.phone || ''}</p>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+           ${showMarkFound ? `<button class="mark-found-btn" onclick="markFoundInModal('${item.id}')" style="padding: 10px 16px; font-size:13px;">Mark as Found</button>` : ''}
+           ${showDelete ? `<button class="delete-btn" onclick="deleteItemInModal('${item.id}')" style="padding: 10px 16px; font-size:13px;">Delete Report</button>` : ''}
+        </div>
+
+        <div class="Responses-box" style="margin-top:10px;">
+           <b>Responses (${itemResponses.length}):</b>
+           <ul style="max-height: 150px; overflow-y: auto; padding-left: 20px; margin-top:8px;">
+              ${itemResponses.length === 0 ? '<li style="color:#64748b; font-style:italic; list-style:none; margin-left:-20px;">No responses posted yet.</li>' : itemResponses.map(n => `<li><b>${n.name || n.responder_name}:</b> ${n.Response || n.response_text}</li>`).join('')}
+           </ul>
+        </div>
+        
+        <form class="Response-form" onsubmit="submitResponseInModal(event, '${item.id}')">
+           <input type="hidden" name="name" value="${currentUser.name}">
+           <textarea name="Response" placeholder="Provide claim or response details..." required style="min-height: 60px; font-size:13.5px;"></textarea>
+           <button type="submit">Submit Response / Claim</button>
+        </form>
+      </div>
+    `;
+    
+    document.getElementById('detailsModalOverlay').classList.add('active');
+}
+
+function closeDetailsModal() {
+    document.getElementById('detailsModalOverlay').classList.remove('active');
+}
+
+// Inner Modal callbacks
+function markFoundInModal(id) {
+    fetch(`/mark_found/${id}`, {method: 'POST'})
+        .then(() => {
+            loadItems();
+            setTimeout(() => { openDetailsModal(id); }, 150);
+        });
+}
+
+function deleteItemInModal(id) {
+    if (confirm("Are you sure you want to delete this report?")) {
+        fetch(`/delete_item/${id}`, {method: 'POST'})
+            .then(() => {
+                closeDetailsModal();
+                loadItems();
+            });
+    }
+}
+
+function submitResponseInModal(e, id) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    fetch(`/add_Response/${id}`, {method: 'POST', body: data})
+        .then(() => {
+            loadItems();
+            form.reset();
+            setTimeout(() => { openDetailsModal(id); }, 200);
+        });
+}
+
+// Add Item Forms submit logic
+function setupFormSubmit(formId, wrapperId) {
+    document.getElementById(formId).addEventListener('submit', function(e){
+      e.preventDefault();
+      const formData=new FormData(this);
+      fetch('/add',{method:'POST',body:formData})
+        .then(res=>res.json())
+        .then(()=>{ 
+          loadItems(); 
+          this.reset();
+          // Collapse active form container
+          document.getElementById(wrapperId).classList.remove('active');
+        });
+    });
+}
+
+setupFormSubmit('addLostForm', 'lostFormWrapper');
+setupFormSubmit('addFoundForm', 'foundFormWrapper');
+
+// Standard button functions
 function markFound(id){ fetch(`/mark_found/${id}`,{method:'POST'}).then(()=>loadItems()); }
 function deleteItem(id){ if(confirm("Are you sure?")){ fetch(`/delete_item/${id}`,{method:'POST'}).then(()=>loadItems()); } }
-function submitResponse(e,id){ e.preventDefault(); const form=e.target; const data=new FormData(form); fetch(`/add_Response/${id}`,{method:'POST',body:data}).then(()=>{loadItems();form.reset();}); }
 
 // Initial load
-loadItems();
+switchSection('lost');
 </script>
-
-</body>
-</html>
+{% endblock %}

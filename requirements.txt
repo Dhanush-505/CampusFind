@@ -1,2 +1,6 @@
 Flask
 Werkzeug
+gunicorn
+pymongo
+dnspython
+python-dotenv

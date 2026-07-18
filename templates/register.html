@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Register - CampusFind{% endblock %}
+
+{% block extra_css %}
+.auth-wrapper {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
+    box-sizing: border-box;
+}
+
+.auth-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 25px 0;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.auth-form input, .auth-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    border: 1.5px solid #334155;
+    background: transparent;
+    color: #0f172a;
+    transition: all 0.25s ease-in-out;
+}
+
+.auth-form input:focus, .auth-form select:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.auth-form select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.auth-form button {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    color: #ffffff;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+    transition: all 0.2s ease;
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+.auth-form button:hover {
+    background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.25);
+}
+
+.error-text {
+    color: #ef4444;
+    font-size: 12.5px;
+    margin-top: 2px;
+    display: none;
+}
+
+.auth-redirect {
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    margin-top: 20px;
+}
+
+.auth-redirect a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-redirect a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+    .auth-wrapper {
+        margin: 20px 10px;
+        padding: 20px;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <h2 class="auth-title">Create Account</h2>
+    <p class="auth-subtitle">Join CampusFind Lost & Found system</p>
+    
+    <form id="registerForm" class="auth-form" method="POST" action="/register" onsubmit="return validateForm()">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required placeholder="John Doe">
+        </div>
+        
+        <div class="form-group">
+            <label for="roll_number">Roll Number / Employee ID</label>
+            <input type="text" id="roll_number" name="roll_number" required placeholder="e.g. 21BCE0001 or EMP101">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Campus Email Address</label>
+            <input type="email" id="email" name="email" required placeholder="john.doe@college.edu">
+        </div>
+        
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required placeholder="10-digit mobile number" pattern="[0-9]{10}">
+        </div>
+
+        <div class="form-group">
+            <label for="role">User Role</label>
+            <select id="role" name="role" required>
+                <option value="student">Student</option>
+                <option value="security">Security Staff</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Minimum 6 characters" minlength="6">
+        </div>
+        
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required placeholder="Re-enter password">
+            <span id="passwordError" class="error-text">Passwords do not match</span>
+        </div>
+        
+        <button type="submit"><i class="fa-solid fa-user-plus"></i> Register</button>
+    </form>
+    
+    <div class="auth-redirect">
+        Already have an account? <a href="/login">Login here</a>
+    </div>
+</div>
+
+<script>
+function validateForm() {
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm_password").value;
+    const errorText = document.getElementById("passwordError");
+    
+    if (password !== confirm) {
+        errorText.style.display = "block";
+        return false;
+    }
+    
+    errorText.style.display = "none";
+    return true;
+}
+</script>
+{% endblock %}
