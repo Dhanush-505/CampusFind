@@ -151,21 +151,54 @@ class MongoDB:
 
         return self.format_item(doc)
 
-    def format_item(self, doc):
+    def format_item(self, doc, current_user_id=None):
         if not doc:
             return None
         item_id = str(doc['_id'])
         owner_id = str(doc.get('owner_id') or doc.get('creator_id', ''))
         responses = doc.get('Responses') or doc.get('responses') or []
         
-        # Normalize responses format
+        current_user_id_str = str(current_user_id) if current_user_id else None
+        
+        # Normalize responses format and enforce privacy rules server-side
         normalized_responses = []
         for r in responses:
+            responder_id_str = str(r.get('responder_id', ''))
+            r_owner_id = str(r.get('owner_id', owner_id))
+            
+            # Show a response only if current_user.id == item.owner_id OR current_user.id == response.responder_id
+            if current_user_id_str is not None:
+                is_owner = (current_user_id_str == owner_id or current_user_id_str == r_owner_id)
+                is_responder = (responder_id_str and current_user_id_str == responder_id_str)
+                if not (is_owner or is_responder):
+                    continue
+
+            resp_id = str(r.get('response_id') or r.get('_id', ''))
+            r_name = r.get('responder_name') or r.get('name', '')
+            r_role = r.get('responder_role', 'student')
+            r_roll = r.get('responder_roll') or r.get('roll', '')
+            r_phone = r.get('responder_phone') or r.get('phone', '')
+            msg = r.get('message') or r.get('Response') or r.get('response_text', '')
+            created_at = r.get('created_at')
+            if isinstance(created_at, datetime.datetime):
+                created_at = created_at.isoformat()
+
             normalized_responses.append({
-                'name': r.get('name') or r.get('responder_name', ''),
-                'roll': r.get('roll') or r.get('responder_roll', ''),
-                'phone': r.get('phone') or r.get('responder_phone', ''),
-                'Response': r.get('Response') or r.get('response_text') or r.get('response', '')
+                'response_id': resp_id,
+                'item_id': item_id,
+                'responder_id': responder_id_str,
+                'responder_name': r_name,
+                'responder_role': r_role,
+                'responder_roll': r_roll,
+                'responder_phone': r_phone,
+                'message': msg,
+                'created_at': created_at or '',
+                'is_read': bool(r.get('is_read', False)),
+                'owner_id': r_owner_id,
+                'name': r_name,
+                'roll': r_roll,
+                'phone': r_phone,
+                'Response': msg
             })
 
         return {
@@ -191,17 +224,17 @@ class MongoDB:
             'status': doc.get('status', 'Active')
         }
 
-    def get_all_items(self):
+    def get_all_items(self, current_user_id=None):
         docs = list(self.db.items.find().sort("created_at", -1))
-        return [self.format_item(doc) for doc in docs]
+        return [self.format_item(doc, current_user_id=current_user_id) for doc in docs]
 
-    def get_item_by_id(self, item_id):
+    def get_item_by_id(self, item_id, current_user_id=None):
         if not item_id:
             return None
         try:
             query = {"_id": ObjectId(item_id)} if ObjectId.is_valid(str(item_id)) else {"_id": str(item_id)}
             doc = self.db.items.find_one(query)
-            return self.format_item(doc)
+            return self.format_item(doc, current_user_id=current_user_id)
         except Exception:
             return None
 
@@ -235,24 +268,48 @@ class MongoDB:
             print(f"Error deleting item: {e}")
             return False
 
-    def add_response(self, item_id, responder_name, responder_roll, responder_phone, response_text):
+    def add_response(self, item_id, responder_id, responder_name, responder_role, responder_roll, responder_phone, message):
         if not item_id:
             return False
         try:
+            item = self.get_item_by_id(item_id)
+            if not item:
+                return False
+            owner_id = str(item.get('owner_id') or item.get('creator_id', ''))
+            
+            response_id = str(ObjectId())
+            now = datetime.datetime.utcnow().isoformat()
+            
             response_obj = {
+                "response_id": response_id,
+                "item_id": str(item_id),
+                "responder_id": str(responder_id),
+                "responder_name": responder_name,
+                "responder_role": responder_role,
+                "responder_roll": responder_roll,
+                "responder_phone": responder_phone,
+                "message": message,
+                "created_at": now,
+                "is_read": False,
+                "owner_id": owner_id,
                 "name": responder_name,
                 "roll": responder_roll,
                 "phone": responder_phone,
-                "Response": response_text
+                "Response": message
             }
+            
             query = {"_id": ObjectId(item_id)} if ObjectId.is_valid(str(item_id)) else {"_id": str(item_id)}
             res = self.db.items.update_one(
                 query,
                 {
-                    "$push": {"Responses": response_obj, "responses": response_obj},
+                    "$push": {"responses": response_obj, "Responses": response_obj},
                     "$set": {"updated_at": datetime.datetime.utcnow()}
                 }
             )
+            if ObjectId.is_valid(str(item_id)):
+                self.db.lost_items.update_one({"_id": ObjectId(item_id)}, {"$push": {"responses": response_obj, "Responses": response_obj}})
+                self.db.found_items.update_one({"_id": ObjectId(item_id)}, {"$push": {"responses": response_obj, "Responses": response_obj}})
+
             return res.modified_count > 0
         except Exception as e:
             print(f"Error adding response: {e}")

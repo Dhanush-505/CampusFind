@@ -9,11 +9,11 @@
     max-width: 1200px;
     margin: 40px auto 35px;
     padding: 60px 40px;
-    background: rgba(255, 255, 255, 0.55);
+    background: transparent;
     border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(15px);
-    box-shadow: 0 12px 40px rgba(15, 23, 42, 0.03);
+    border: none;
+    backdrop-filter: none;
+    box-shadow: none;
     text-align: center;
     overflow: hidden;
     animation: fadeInDown 0.8s ease-out;
@@ -303,61 +303,280 @@
 }
 
 .form-glass-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.72);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
-    padding: 35px;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.05);
+    padding: 40px 36px;
     box-sizing: border-box;
-    width: 600px;
+    max-width: 650px;
+    width: 100%;
     margin: 0 auto;
+    font-family: 'Roboto', sans-serif;
+    transition: all 0.3s ease;
 }
 
-.form-glass-card h2 {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 25px 0;
+.form-header {
     text-align: center;
-    letter-spacing: -0.5px;
-    display: flex;
+    margin-bottom: 28px;
+}
+
+.form-icon-badge {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
-.form-glass-card h2 i {
-    color: #4f46e5;
+.form-icon-lost {
+    background: #fee2e2;
+    color: #ef4444;
 }
 
-/* Form Dropdowns & Inputs */
-.add-form select, .add-form input[type="date"] {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 10px;
+.form-icon-found {
+    background: #dcfce7;
+    color: #22c55e;
+}
+
+.form-header h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+}
+
+.form-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+    font-weight: 400;
+}
+
+.add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+}
+
+.form-label {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #334155;
+    letter-spacing: 0.2px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper .input-icon {
+    position: absolute;
+    left: 14px;
+    color: #64748b;
     font-size: 15px;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.textarea-wrapper .input-icon {
+    top: 14px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border-radius: 12px;
+    font-size: 14.5px;
+    font-family: 'Roboto', sans-serif;
     outline: none;
     box-sizing: border-box;
-    border: 1.5px solid #334155;
-    background: transparent;
+    border: 1.5px solid rgba(203, 213, 225, 0.8);
+    background: rgba(255, 255, 255, 0.85);
     color: #0f172a;
-    transition: all 0.25s ease-in-out;
+    transition: all 0.25s ease;
 }
 
-.add-form select:focus, .add-form input[type="date"]:focus {
+.form-input::placeholder {
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.form-input:focus {
     border-color: #4f46e5;
+    background: #ffffff;
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
 }
 
-.add-form select {
+.form-input:focus + .input-icon,
+.input-wrapper:focus-within .input-icon {
+    color: #4f46e5;
+}
+
+.form-textarea {
+    min-height: 100px;
+    resize: none;
+    line-height: 1.5;
+}
+
+/* Custom Upload Dropzone */
+.upload-dropzone {
+    border: 2px dashed rgba(79, 70, 229, 0.35);
+    background: rgba(248, 250, 252, 0.7);
+    border-radius: 14px;
+    padding: 24px 20px;
+    text-align: center;
     cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    background-size: 16px;
-    padding-right: 40px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-dropzone:hover, .upload-dropzone.dragover {
+    border-color: #4f46e5;
+    background: rgba(79, 70, 229, 0.05);
+    transform: translateY(-1px);
+}
+
+.file-input-hidden {
+    display: none;
+}
+
+.upload-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: #4f46e5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+
+.upload-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 4px 0;
+}
+
+.upload-hint {
+    font-size: 12px;
+    color: #64748b;
+    margin: 0;
+}
+
+.upload-preview-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.upload-preview-img {
+    max-height: 140px;
+    max-width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.file-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-remove-file {
+    background: #fee2e2;
+    color: #ef4444;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-remove-file:hover {
+    background: #fca5a5;
+    color: #b91c1c;
+}
+
+/* Submit Row */
+.form-submit-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-form-submit {
+    width: 60%;
+    min-width: 220px;
+    padding: 13px 24px;
+    border-radius: 30px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.2);
+}
+
+.btn-submit-lost {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.25);
+}
+
+.btn-submit-lost:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.35);
+}
+
+.btn-submit-found {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25);
+}
+
+.btn-submit-found:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.35);
 }
 
 /* Responsive Grid for Cards */
@@ -1031,16 +1250,66 @@
 <!-- Collapsible AddLostForm Wrapper -->
 <div class="form-wrapper" id="lostFormWrapper">
     <div class="form-glass-card">
-        <h2><i class="fa-solid fa-triangle-exclamation"></i> Report a Lost Item</h2>
+        <div class="form-header">
+            <div class="form-icon-badge form-icon-lost"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h2>Report a Lost Item</h2>
+            <p class="form-subtitle">Provide the details below to help the campus community.</p>
+        </div>
         <form id="addLostForm" class="add-form" enctype="multipart/form-data">
             <input type="hidden" name="type" value="Lost">
-            <input type="text" name="name" value="{{ session.get('name', '') }}" required readonly placeholder="Your Name">
-            <input type="text" name="roll" value="{{ session.get('roll_number', '') }}" required readonly placeholder="Roll Number">
-            <input type="text" name="phone" value="{{ session.get('phone', '') }}" required readonly placeholder="Phone Number">
-            <input type="text" name="item" placeholder="Lost Item Name" required>
-            <textarea name="description" placeholder="Where did you lose it? Describe item characteristics..." required></textarea>
-            <input type="file" name="image" accept="image/*">
-            <button type="submit"><i class="fas fa-plus"></i> Submit Lost Report</button>
+            <input type="hidden" name="name" value="{{ session.get('name', '') }}">
+            <input type="hidden" name="roll" value="{{ session.get('roll_number', '') }}">
+            <input type="hidden" name="phone" value="{{ session.get('phone', '') }}">
+            <input type="hidden" name="date" class="auto-date-input">
+
+            <div class="form-group">
+                <label for="lostItemName" class="form-label">Item</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-tag input-icon"></i>
+                    <input type="text" id="lostItemName" name="item" class="form-input" placeholder="Enter item name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="lostItemDesc" class="form-label">Description</label>
+                <div class="input-wrapper textarea-wrapper">
+                    <i class="fa-solid fa-align-left input-icon"></i>
+                    <textarea id="lostItemDesc" name="description" class="form-input form-textarea" rows="4" placeholder="Describe the item..." required></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="lostItemPlace" class="form-label">Place</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-location-dot input-icon"></i>
+                    <input type="text" id="lostItemPlace" name="location" class="form-input" placeholder="Where was it lost/found?" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Upload Image</label>
+                <div class="upload-dropzone" id="dropzoneLost" onclick="triggerFileInput('fileInputLost')">
+                    <input type="file" id="fileInputLost" name="image" accept="image/*" class="file-input-hidden" onchange="handleFileSelect(event, 'previewLost', 'dropzoneLost', 'filenameLost', 'imgPreviewLost', 'uploadContentLost')">
+                    <div class="upload-content" id="uploadContentLost">
+                        <div class="upload-icon-circle"><i class="fa-solid fa-camera"></i></div>
+                        <p class="upload-title">📷 Click to upload or drag & drop</p>
+                        <p class="upload-hint">PNG, JPG, WEBP up to 10MB</p>
+                    </div>
+                    <div class="upload-preview-container" id="previewLost" style="display:none;">
+                        <img src="" alt="Selected Preview" class="upload-preview-img" id="imgPreviewLost">
+                        <div class="file-meta">
+                            <span class="file-name" id="filenameLost">filename.png</span>
+                            <button type="button" class="btn-remove-file" onclick="clearFileSelect(event, 'fileInputLost', 'previewLost', 'dropzoneLost', 'uploadContentLost')"><i class="fa-solid fa-xmark"></i> Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-submit-row">
+                <button type="submit" class="btn-form-submit btn-submit-lost">
+                    <i class="fa-solid fa-paper-plane"></i> Report Lost Item
+                </button>
+            </div>
         </form>
     </div>
 </div>
@@ -1048,30 +1317,66 @@
 <!-- Collapsible AddFoundForm Wrapper -->
 <div class="form-wrapper" id="foundFormWrapper">
     <div class="form-glass-card">
-        <h2><i class="fa-solid fa-circle-check"></i> Report a Found Item</h2>
+        <div class="form-header">
+            <div class="form-icon-badge form-icon-found"><i class="fa-solid fa-circle-check"></i></div>
+            <h2>Report a Found Item</h2>
+            <p class="form-subtitle">Provide the details below to help the campus community.</p>
+        </div>
         <form id="addFoundForm" class="add-form" enctype="multipart/form-data">
             <input type="hidden" name="type" value="Found">
-            <input type="text" name="name" value="{{ session.get('name', '') }}" required readonly placeholder="Your Name">
-            <input type="text" name="roll" value="{{ session.get('roll_number', '') }}" required readonly placeholder="Roll Number">
-            <input type="text" name="phone" value="{{ session.get('phone', '') }}" required readonly placeholder="Phone Number">
-            <input type="text" name="item" placeholder="Found Item Name" required>
-            
-            <select name="category" required>
-                <option value="" disabled selected>Select Category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Books & Stationery">Books & Stationery</option>
-                <option value="Cards & Wallets">Cards & Wallets</option>
-                <option value="Clothing & Accessories">Clothing & Accessories</option>
-                <option value="Keys">Keys</option>
-                <option value="Others">Others</option>
-            </select>
-            
-            <input type="text" name="location" placeholder="Location Found (e.g. Library, Block C)" required>
-            <input type="date" name="date" required>
-            
-            <textarea name="description" placeholder="Describe the item (color, size, brand)..." required></textarea>
-            <input type="file" name="image" accept="image/*">
-            <button type="submit"><i class="fas fa-plus"></i> Submit Found Report</button>
+            <input type="hidden" name="name" value="{{ session.get('name', '') }}">
+            <input type="hidden" name="roll" value="{{ session.get('roll_number', '') }}">
+            <input type="hidden" name="phone" value="{{ session.get('phone', '') }}">
+            <input type="hidden" name="date" class="auto-date-input">
+
+            <div class="form-group">
+                <label for="foundItemName" class="form-label">Item</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-tag input-icon"></i>
+                    <input type="text" id="foundItemName" name="item" class="form-input" placeholder="Enter item name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="foundItemDesc" class="form-label">Description</label>
+                <div class="input-wrapper textarea-wrapper">
+                    <i class="fa-solid fa-align-left input-icon"></i>
+                    <textarea id="foundItemDesc" name="description" class="form-input form-textarea" rows="4" placeholder="Describe the item..." required></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="foundItemPlace" class="form-label">Place</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-location-dot input-icon"></i>
+                    <input type="text" id="foundItemPlace" name="location" class="form-input" placeholder="Where was it lost/found?" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Upload Image</label>
+                <div class="upload-dropzone" id="dropzoneFound" onclick="triggerFileInput('fileInputFound')">
+                    <input type="file" id="fileInputFound" name="image" accept="image/*" class="file-input-hidden" onchange="handleFileSelect(event, 'previewFound', 'dropzoneFound', 'filenameFound', 'imgPreviewFound', 'uploadContentFound')">
+                    <div class="upload-content" id="uploadContentFound">
+                        <div class="upload-icon-circle"><i class="fa-solid fa-camera"></i></div>
+                        <p class="upload-title">📷 Click to upload or drag & drop</p>
+                        <p class="upload-hint">PNG, JPG, WEBP up to 10MB</p>
+                    </div>
+                    <div class="upload-preview-container" id="previewFound" style="display:none;">
+                        <img src="" alt="Selected Preview" class="upload-preview-img" id="imgPreviewFound">
+                        <div class="file-meta">
+                            <span class="file-name" id="filenameFound">filename.png</span>
+                            <button type="button" class="btn-remove-file" onclick="clearFileSelect(event, 'fileInputFound', 'previewFound', 'dropzoneFound', 'uploadContentFound')"><i class="fa-solid fa-xmark"></i> Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-submit-row">
+                <button type="submit" class="btn-form-submit btn-submit-found">
+                    <i class="fa-solid fa-paper-plane"></i> Report Found Item
+                </button>
+            </div>
         </form>
     </div>
 </div>
@@ -1351,7 +1656,7 @@ function filterAndSortItems() {
         // Show control checks
         const ownerIdStr = String(item.creator_id || item.owner_id || '');
         const currentUserIdStr = String(currentUser.id || '');
-        const showMarkFound = !item.found && (currentUser.role === 'admin' || currentUser.role === 'security' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+        const showMarkFound = !item.found && item.type === 'Lost' && (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
         const showDelete = (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
 
         const categoryHTML = item.category ? `<div class="item-card-category"><i class="fa-solid fa-tag"></i> ${item.category}</div>` : '';
@@ -1434,7 +1739,7 @@ function openDetailsModal(itemId) {
     
     const ownerIdStr = String(item.creator_id || item.owner_id || '');
     const currentUserIdStr = String(currentUser.id || '');
-    const showMarkFound = !item.found && (currentUser.role === 'admin' || currentUser.role === 'security' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+    const showMarkFound = !item.found && item.type === 'Lost' && (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
     const showDelete = (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
     const itemResponses = item.Responses || item.responses || [];
 
@@ -1473,7 +1778,7 @@ function openDetailsModal(itemId) {
         <div class="Responses-box" style="margin-top:10px;">
            <b>Responses (${itemResponses.length}):</b>
            <ul style="max-height: 150px; overflow-y: auto; padding-left: 20px; margin-top:8px;">
-              ${itemResponses.length === 0 ? '<li style="color:#64748b; font-style:italic; list-style:none; margin-left:-20px;">No responses posted yet.</li>' : itemResponses.map(n => `<li><b>${n.name || n.responder_name}:</b> ${n.Response || n.response_text}</li>`).join('')}
+              ${itemResponses.length === 0 ? '<li style="color:#64748b; font-style:italic; list-style:none; margin-left:-20px;">No responses available.</li>' : itemResponses.map(n => `<li><b>${n.responder_name || n.name}:</b> ${n.message || n.Response || n.response_text}</li>`).join('')}
            </ul>
         </div>
         
@@ -1523,24 +1828,98 @@ function submitResponseInModal(e, id) {
         });
 }
 
+// Auto-fill hidden date inputs with current date
+const todayIsoStr = new Date().toISOString().split('T')[0];
+document.querySelectorAll('.auto-date-input').forEach(el => el.value = todayIsoStr);
+
+// Trigger hidden file input
+function triggerFileInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) input.click();
+}
+
+// Handle file selection and live thumbnail preview
+function handleFileSelect(e, previewId, dropzoneId, filenameId, imgPreviewId, contentId) {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file) {
+        document.getElementById(filenameId).innerText = file.name;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            document.getElementById(imgPreviewId).src = evt.target.result;
+            document.getElementById(contentId).style.display = 'none';
+            document.getElementById(previewId).style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Clear selected file and reset dropzone UI
+function clearFileSelect(e, inputId, previewId, dropzoneId, contentId) {
+    e.stopPropagation();
+    const input = document.getElementById(inputId);
+    if (input) input.value = '';
+    document.getElementById(previewId).style.display = 'none';
+    document.getElementById(contentId).style.display = 'block';
+}
+
+// Attach Drag & Drop handlers to a dropzone element
+function setupDropzone(dropzoneId, inputId, previewId, filenameId, imgPreviewId, contentId) {
+    const dz = document.getElementById(dropzoneId);
+    if (!dz) return;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dz.addEventListener(eventName, e => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dz.addEventListener(eventName, () => dz.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dz.addEventListener(eventName, () => dz.classList.remove('dragover'), false);
+    });
+
+    dz.addEventListener('drop', e => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+            const input = document.getElementById(inputId);
+            input.files = files;
+            handleFileSelect({ target: input }, previewId, dropzoneId, filenameId, imgPreviewId, contentId);
+        }
+    }, false);
+}
+
+setupDropzone('dropzoneLost', 'fileInputLost', 'previewLost', 'filenameLost', 'imgPreviewLost', 'uploadContentLost');
+setupDropzone('dropzoneFound', 'fileInputFound', 'previewFound', 'filenameFound', 'imgPreviewFound', 'uploadContentFound');
+
 // Add Item Forms submit logic
-function setupFormSubmit(formId, wrapperId) {
-    document.getElementById(formId).addEventListener('submit', function(e){
+function setupFormSubmit(formId, wrapperId, previewId, contentId, inputId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    form.addEventListener('submit', function(e){
       e.preventDefault();
-      const formData=new FormData(this);
-      fetch('/add',{method:'POST',body:formData})
-        .then(res=>res.json())
-        .then(()=>{ 
+      const formData = new FormData(this);
+      fetch('/add', {method: 'POST', body: formData})
+        .then(res => res.json())
+        .then(() => { 
           loadItems(); 
           this.reset();
+          if (previewId && contentId) {
+              document.getElementById(previewId).style.display = 'none';
+              document.getElementById(contentId).style.display = 'block';
+          }
           // Collapse active form container
           document.getElementById(wrapperId).classList.remove('active');
         });
     });
 }
 
-setupFormSubmit('addLostForm', 'lostFormWrapper');
-setupFormSubmit('addFoundForm', 'foundFormWrapper');
+setupFormSubmit('addLostForm', 'lostFormWrapper', 'previewLost', 'uploadContentLost', 'fileInputLost');
+setupFormSubmit('addFoundForm', 'foundFormWrapper', 'previewFound', 'uploadContentFound', 'fileInputFound');
 
 // Standard button functions
 function markFound(id){ fetch(`/mark_found/${id}`,{method:'POST'}).then(()=>loadItems()); }

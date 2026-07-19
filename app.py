@@ -48,7 +48,8 @@ def admin_dashboard():
 @app.route('/get_items')
 @login_required
 def get_items():
-    return jsonify(db.get_all_items())
+    current_user_id = session.get('user_id')
+    return jsonify(db.get_all_items(current_user_id=current_user_id))
 
 @app.route('/add', methods=['POST'])
 @login_required
@@ -93,15 +94,15 @@ def add_item():
 @app.route('/mark_found/<item_id>', methods=['POST'])
 @login_required
 def mark_found(item_id):
-    item = db.get_item_by_id(item_id)
+    current_user_id = str(session.get('user_id'))
+    item = db.get_item_by_id(item_id, current_user_id=current_user_id)
     if not item:
         return 'Item not found', 404
         
-    # Check permissions: Admin, Security, or creator/owner of the post
-    current_user_id = str(session.get('user_id'))
+    # Check permissions: Admin or creator/owner of the post
     item_owner_id = str(item.get('creator_id') or item.get('owner_id'))
 
-    if session.get('role') in ['admin', 'security'] or current_user_id == item_owner_id:
+    if session.get('role') == 'admin' or current_user_id == item_owner_id:
         db.mark_item_found(item_id)
         return '', 200
     return 'Unauthorized', 403
@@ -109,31 +110,37 @@ def mark_found(item_id):
 @app.route('/add_Response/<item_id>', methods=['POST'])
 @login_required
 def add_Response(item_id):
-    Response_text = request.form.get('Response')
+    Response_text = request.form.get('Response') or request.form.get('message')
+    if not Response_text:
+        return 'Response message required', 400
     
-    # Use session name, roll number, and phone for the responder
+    # Use session variables for responder identity
+    responder_id = session['user_id']
     responder_name = session['name']
+    responder_role = session.get('role', 'student')
     responder_roll = session['roll_number']
     responder_phone = session['phone']
 
     db.add_response(
         item_id=item_id,
+        responder_id=responder_id,
         responder_name=responder_name,
+        responder_role=responder_role,
         responder_roll=responder_roll,
         responder_phone=responder_phone,
-        response_text=Response_text
+        message=Response_text
     )
     return '', 200
 
 @app.route('/delete_item/<item_id>', methods=['POST'])
 @login_required
 def delete_item(item_id):
-    item = db.get_item_by_id(item_id)
+    current_user_id = str(session.get('user_id'))
+    item = db.get_item_by_id(item_id, current_user_id=current_user_id)
     if not item:
         return 'Item not found', 404
         
     # Check permissions: Admin or creator/owner of the post
-    current_user_id = str(session.get('user_id'))
     item_owner_id = str(item.get('creator_id') or item.get('owner_id'))
 
     if session.get('role') == 'admin' or current_user_id == item_owner_id:
