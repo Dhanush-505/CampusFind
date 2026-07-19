@@ -144,7 +144,7 @@ def delete_item(item_id):
     item_owner_id = str(item.get('creator_id') or item.get('owner_id'))
 
     if current_user_id == item_owner_id:
-        db.delete_item(item_id)
+        db.delete_item(item_id, current_user_id=current_user_id)
         return '', 200
     return 'Unauthorized', 403
 

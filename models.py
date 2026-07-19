@@ -249,28 +249,28 @@ class MongoDB:
             print(f"Error marking item found: {e}")
             return False
 
-    def delete_item(self, item_id, current_user_id):
-        if not item_id or not current_user_id:
+    def delete_item(self, item_id, current_user_id=None):
+        if not item_id:
             return False
-            
+
         try:
-            # THE FIX: Fetch the item first and verify the current user is the owner
+            # Fetch the item first and verify ownership if current_user_id is provided
             item = self.get_item_by_id(item_id)
             if not item:
                 return False
-                
-            if item.get('owner_id') != str(current_user_id):
-                print("Unauthorized delete attempt.")
-                return False 
 
-            # Proceed with deletion if the IDs match
+            if current_user_id and str(item.get('owner_id')) != str(current_user_id):
+                print("Unauthorized delete attempt.")
+                return False
+
+            # Proceed with deletion if ownership matches or bypass is granted
             query = {"_id": ObjectId(item_id)} if ObjectId.is_valid(str(item_id)) else {"_id": str(item_id)}
             res = self.db.items.delete_one(query)
-            
+
             if ObjectId.is_valid(str(item_id)):
                 self.db.lost_items.delete_one({"_id": ObjectId(item_id)})
                 self.db.found_items.delete_one({"_id": ObjectId(item_id)})
-                
+
             return res.deleted_count > 0
         except Exception as e:
             print(f"Error deleting item: {e}")
