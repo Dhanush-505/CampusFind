@@ -99,10 +99,10 @@ def mark_found(item_id):
     if not item:
         return 'Item not found', 404
         
-    # Check permissions: Admin or creator/owner of the post
+    # Check permissions: Only creator/owner of the post can mark it as found
     item_owner_id = str(item.get('creator_id') or item.get('owner_id'))
 
-    if session.get('role') == 'admin' or current_user_id == item_owner_id:
+    if current_user_id == item_owner_id:
         db.mark_item_found(item_id)
         return '', 200
     return 'Unauthorized', 403
@@ -140,13 +140,49 @@ def delete_item(item_id):
     if not item:
         return 'Item not found', 404
         
-    # Check permissions: Admin or creator/owner of the post
+    # Check permissions: Only creator/owner of the post can delete it
     item_owner_id = str(item.get('creator_id') or item.get('owner_id'))
 
-    if session.get('role') == 'admin' or current_user_id == item_owner_id:
+    if current_user_id == item_owner_id:
         db.delete_item(item_id)
         return '', 200
     return 'Unauthorized', 403
+
+@app.route('/edit_item/<item_id>', methods=['POST'])
+@login_required
+def edit_item(item_id):
+    current_user_id = str(session.get('user_id'))
+    item = db.get_item_by_id(item_id, current_user_id=current_user_id)
+    if not item:
+        return 'Item not found', 404
+        
+    # Check permissions: Only creator/owner of the post can edit it
+    item_owner_id = str(item.get('creator_id') or item.get('owner_id'))
+
+    if current_user_id != item_owner_id:
+        return 'Unauthorized', 403
+
+    item_name = request.form.get('item')
+    description = request.form.get('description')
+    location = request.form.get('location')
+    category = request.form.get('category')
+    file = request.files.get('image')
+
+    filename = None
+    if file and file.filename != '':
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+    db.update_item(
+        item_id=item_id,
+        item_name=item_name,
+        description=description,
+        location=location,
+        category=category,
+        filename=filename
+    )
+    return jsonify({'status': 'ok'})
 
 # Registration & Login routes
 @app.route('/register', methods=['GET', 'POST'])

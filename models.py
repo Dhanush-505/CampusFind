@@ -268,6 +268,35 @@ class MongoDB:
             print(f"Error deleting item: {e}")
             return False
 
+    def update_item(self, item_id, item_name=None, description=None, location=None, category=None, filename=None):
+        if not item_id:
+            return False
+        try:
+            update_data = {"updated_at": datetime.datetime.utcnow()}
+            if item_name:
+                update_data["title"] = item_name
+                update_data["item"] = item_name
+            if description is not None:
+                update_data["description"] = description
+            if location is not None:
+                update_data["location"] = location
+                update_data["location_found"] = location
+            if category is not None:
+                update_data["category"] = category
+            if filename:
+                update_data["image"] = filename
+
+            query = {"_id": ObjectId(item_id)} if ObjectId.is_valid(str(item_id)) else {"_id": str(item_id)}
+            res = self.db.items.update_one(query, {"$set": update_data})
+            if ObjectId.is_valid(str(item_id)):
+                self.db.lost_items.update_one({"_id": ObjectId(item_id)}, {"$set": update_data})
+                self.db.found_items.update_one({"_id": ObjectId(item_id)}, {"$set": update_data})
+
+            return res.modified_count > 0 or res.matched_count > 0
+        except Exception as e:
+            print(f"Error updating item: {e}")
+            return False
+
     def add_response(self, item_id, responder_id, responder_name, responder_role, responder_roll, responder_phone, message):
         if not item_id:
             return False

@@ -1656,8 +1656,8 @@ function filterAndSortItems() {
         // Show control checks
         const ownerIdStr = String(item.creator_id || item.owner_id || '');
         const currentUserIdStr = String(currentUser.id || '');
-        const showMarkFound = !item.found && item.type === 'Lost' && (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
-        const showDelete = (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+        const showMarkFound = !item.found && item.type === 'Lost' && (currentUserIdStr && ownerIdStr === currentUserIdStr);
+        const showDelete = Boolean(currentUserIdStr && ownerIdStr === currentUserIdStr);
 
         const categoryHTML = item.category ? `<div class="item-card-category"><i class="fa-solid fa-tag"></i> ${item.category}</div>` : '';
         const locHTML = item.location ? `<div class="meta-row"><i class="fa-solid fa-location-dot"></i> 📍 ${item.location}</div>` : '';
@@ -1739,8 +1739,8 @@ function openDetailsModal(itemId) {
     
     const ownerIdStr = String(item.creator_id || item.owner_id || '');
     const currentUserIdStr = String(currentUser.id || '');
-    const showMarkFound = !item.found && item.type === 'Lost' && (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
-    const showDelete = (currentUser.role === 'admin' || (currentUserIdStr && ownerIdStr === currentUserIdStr));
+    const showMarkFound = !item.found && item.type === 'Lost' && (currentUserIdStr && ownerIdStr === currentUserIdStr);
+    const showDelete = Boolean(currentUserIdStr && ownerIdStr === currentUserIdStr);
     const itemResponses = item.Responses || item.responses || [];
 
     content.innerHTML = `
