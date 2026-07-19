@@ -1381,36 +1381,6 @@
     </div>
 </div>
 
-<!-- Search & Filter Bar -->
-<div class="search-toolbar">
-    <div class="search-input-wrapper">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="searchInput" placeholder="Search items by name or description..." oninput="filterAndSortItems()">
-    </div>
-    
-    <select id="categoryFilter" onchange="filterAndSortItems()">
-        <option value="All">All Categories</option>
-        <option value="Electronics">Electronics</option>
-        <option value="Books & Stationery">Books & Stationery</option>
-        <option value="Cards & Wallets">Cards & Wallets</option>
-        <option value="Clothing & Accessories">Clothing & Accessories</option>
-        <option value="Keys">Keys</option>
-        <option value="Others">Others</option>
-    </select>
-    
-    <select id="statusFilter" onchange="filterAndSortItems()">
-        <option value="All">All Statuses</option>
-        <option value="Active">Active (Unresolved)</option>
-        <option value="Resolved">Resolved (Found/Claimed)</option>
-    </select>
-    
-    <select id="sortOrder" onchange="filterAndSortItems()">
-        <option value="Newest">Newest First</option>
-        <option value="Oldest">Oldest First</option>
-        <option value="Alphabetical">Alphabetical (A-Z)</option>
-    </select>
-</div>
-
 <!-- View Section Title -->
 <div class="section-title-container">
     <h2 id="sectionTitle">Lost Items</h2>
@@ -1474,10 +1444,14 @@ function switchSection(section) {
     document.getElementById('sectionTitle').innerText = section === 'lost' ? 'Lost Items' : 'Found Items';
     
     // Reset filters
-    document.getElementById('searchInput').value = '';
-    document.getElementById('categoryFilter').value = 'All';
-    document.getElementById('statusFilter').value = 'All';
-    document.getElementById('sortOrder').value = 'Newest';
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortOrder = document.getElementById('sortOrder');
+    if (searchInput) searchInput.value = '';
+    if (categoryFilter) categoryFilter.value = 'All';
+    if (statusFilter) statusFilter.value = 'All';
+    if (sortOrder) sortOrder.value = 'Newest';
     
     filterAndSortItems();
 }
@@ -1537,18 +1511,23 @@ function animateCounter(id, target, startVal) {
 }
 
 // Load items dynamically
-function loadItems(){
-  // Display skeleton loaders
+function loadItems(isAutoRefresh = false){
   const container = document.getElementById('itemsContainer');
-  container.innerHTML = `
-    <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
-    <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
-    <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
-  `;
+  // Display skeleton loaders only on initial load when no items are present
+  if (!isAutoRefresh && (!allItems || allItems.length === 0)) {
+    container.innerHTML = `
+      <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
+      <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
+      <div class="skeleton-card"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line meta"></div><div class="skeleton-line desc"></div></div>
+    `;
+  }
   
   fetch('/get_items')
-    .then(res=>res.json())
-    .then(data=>{
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch items');
+      return res.json();
+    })
+    .then(data => {
       allItems = data;
       
       // Calculate active statistics
@@ -1563,15 +1542,31 @@ function loadItems(){
       prevFoundCount = totalFound;
       
       filterAndSortItems();
+    })
+    .catch(err => {
+      console.error("Error fetching items:", err);
+      if (!allItems || allItems.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <h3>Unable to load Lost & Found data</h3>
+            <p>Please check your connection or try again shortly.</p>
+          </div>
+        `;
+      }
     });
 }
 
 // Filter and sort items dynamically on the client
 function filterAndSortItems() {
-    const searchVal = document.getElementById('searchInput').value.toLowerCase();
-    const categoryVal = document.getElementById('categoryFilter').value;
-    const statusVal = document.getElementById('statusFilter').value;
-    const sortVal = document.getElementById('sortOrder').value;
+    const searchInput = document.getElementById('searchInput');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortOrder = document.getElementById('sortOrder');
+    const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
+    const categoryVal = categoryFilter ? categoryFilter.value : 'All';
+    const statusVal = statusFilter ? statusFilter.value : 'All';
+    const sortVal = sortOrder ? sortOrder.value : 'Newest';
     const container = document.getElementById('itemsContainer');
     
     // 1. Filter by section (lost vs found)
@@ -1926,6 +1921,12 @@ function markFound(id){ fetch(`/mark_found/${id}`,{method:'POST'}).then(()=>load
 function deleteItem(id){ if(confirm("Are you sure?")){ fetch(`/delete_item/${id}`,{method:'POST'}).then(()=>loadItems()); } }
 
 // Initial load
+loadItems();
 switchSection('lost');
+
+// Auto refresh every 30 seconds
+setInterval(() => {
+    loadItems(true);
+}, 30000);
 </script>
 {% endblock %}
