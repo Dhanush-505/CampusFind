@@ -160,18 +160,13 @@ class MongoDB:
         
         current_user_id_str = str(current_user_id) if current_user_id else None
         
-        # Normalize responses format and enforce privacy rules server-side
         normalized_responses = []
         for r in responses:
             responder_id_str = str(r.get('responder_id', ''))
             r_owner_id = str(r.get('owner_id', owner_id))
             
-            # Show a response only if current_user.id == item.owner_id OR current_user.id == response.responder_id
-            if current_user_id_str is not None:
-                is_owner = (current_user_id_str == owner_id or current_user_id_str == r_owner_id)
-                is_responder = (responder_id_str and current_user_id_str == responder_id_str)
-                if not (is_owner or is_responder):
-                    continue
+            # THE FIX: Removed the privacy block that was hiding responses from other users.
+            # Everyone can now see all responses appended to this item.
 
             resp_id = str(r.get('response_id') or r.get('_id', ''))
             r_name = r.get('responder_name') or r.get('name', '')
@@ -254,15 +249,28 @@ class MongoDB:
             print(f"Error marking item found: {e}")
             return False
 
-    def delete_item(self, item_id):
-        if not item_id:
+    def delete_item(self, item_id, current_user_id):
+        if not item_id or not current_user_id:
             return False
+            
         try:
+            # THE FIX: Fetch the item first and verify the current user is the owner
+            item = self.get_item_by_id(item_id)
+            if not item:
+                return False
+                
+            if item.get('owner_id') != str(current_user_id):
+                print("Unauthorized delete attempt.")
+                return False 
+
+            # Proceed with deletion if the IDs match
             query = {"_id": ObjectId(item_id)} if ObjectId.is_valid(str(item_id)) else {"_id": str(item_id)}
             res = self.db.items.delete_one(query)
+            
             if ObjectId.is_valid(str(item_id)):
                 self.db.lost_items.delete_one({"_id": ObjectId(item_id)})
                 self.db.found_items.delete_one({"_id": ObjectId(item_id)})
+                
             return res.deleted_count > 0
         except Exception as e:
             print(f"Error deleting item: {e}")
