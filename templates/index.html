@@ -3,6 +3,7 @@
 {% block title %}Dashboard - CampusFind{% endblock %}
 
 {% block extra_css %}
+<style>
 /* Hero Section */
 .hero-section {
     position: relative;
@@ -69,6 +70,7 @@
     letter-spacing: -1.5px;
     background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -1185,6 +1187,7 @@
         font-size: 2.6rem;
     }
 }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -1628,7 +1631,7 @@ function filterAndSortItems() {
         let imgHTML = '';
         if (item.image) {
             imgHTML = `<div class="item-card-image-box">
-              <img src="/static/uploads/${item.image}" class="item-card-image">
+              <img src="/static/uploads/${item.image}" class="item-card-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'item-placeholder-img\\'><i class=\\'fa-solid fa-box\\'></i></div>';">
             </div>`;
         } else {
             imgHTML = `<div class="item-card-image-box">
@@ -1719,7 +1722,7 @@ function openDetailsModal(itemId) {
     let imgHTML = '';
     if (item.image) {
         imgHTML = `<div class="modal-image-box">
-          <img src="/static/uploads/${item.image}" class="modal-image">
+          <img src="/static/uploads/${item.image}" class="modal-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'modal-placeholder-img\\'><i class=\\'fa-solid fa-box-open\\'></i></div>';">
         </div>`;
     } else {
         imgHTML = `<div class="modal-placeholder-img"><i class="fa-solid fa-box-open"></i></div>`;

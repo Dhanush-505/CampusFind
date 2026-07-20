@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,6 +13,30 @@ app.secret_key = Config.SECRET_KEY
 # Ensure upload folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# Ensure default placeholder image exists
+images_dir = os.path.join(app.root_path, 'static', 'images')
+placeholder_path = os.path.join(images_dir, 'placeholder.jpg')
+logo_path = os.path.join(images_dir, 'logo.jpg')
+if not os.path.exists(placeholder_path) and os.path.exists(logo_path):
+    import shutil
+    shutil.copy(logo_path, placeholder_path)
+
+@app.route('/static/uploads/<path:filename>')
+def serve_upload(filename):
+    upload_folder = app.config['UPLOAD_FOLDER']
+    file_path = os.path.join(upload_folder, filename)
+    if os.path.exists(file_path):
+        return send_from_directory(upload_folder, filename)
+    
+    # Fallback to default placeholder image if missing on disk (e.g. lost due to ephemeral disk on deployment)
+    images_dir = os.path.join(app.root_path, 'static', 'images')
+    if os.path.exists(os.path.join(images_dir, 'placeholder.jpg')):
+        return send_from_directory(images_dir, 'placeholder.jpg')
+    elif os.path.exists(os.path.join(images_dir, 'logo.jpg')):
+        return send_from_directory(images_dir, 'logo.jpg')
+    
+    return send_from_directory(upload_folder, filename)
 
 @app.route('/')
 def home():
