@@ -1635,12 +1635,14 @@ function filterAndSortItems() {
     filtered.forEach(item => {
         const card = document.createElement('div');
         card.className = 'item-card';
+        const itemId = item.id || item._id;
+        card.setAttribute('data-id', itemId);
         
         // Image box element
         let imgHTML = '';
         if (item.image) {
             const imgUrl = getImageUrl(item.image);
-            imgHTML = `<div class="item-card-image-box">
+            imgHTML = `<div class="item-card-image-box" onclick="openModal('${imgUrl}')" style="cursor:pointer;">
               <img src="${imgUrl}" class="item-card-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'item-placeholder-img\\'><i class=\\'fa-solid fa-box\\'></i></div>';">
             </div>`;
         } else {
@@ -1732,7 +1734,7 @@ function openDetailsModal(itemId) {
     let imgHTML = '';
     if (item.image) {
         const imgUrl = getImageUrl(item.image);
-        imgHTML = `<div class="modal-image-box">
+        imgHTML = `<div class="modal-image-box" onclick="openModal('${imgUrl}')" style="cursor:pointer;">
           <img src="${imgUrl}" class="modal-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'modal-placeholder-img\\'><i class=\\'fa-solid fa-box-open\\'></i></div>';">
         </div>`;
     } else {
