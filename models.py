@@ -52,12 +52,17 @@ class MongoDB:
     def create_user(self, name, roll_number, email, phone, password_hash, role):
         now = datetime.datetime.utcnow()
         today = datetime.date.today().strftime("%Y-%m-%d")
+        clean_email = (email or '').strip().lower()
+        clean_roll = (roll_number or '').strip()
+        clean_name = (name or '').strip()
+        clean_phone = (phone or '').strip()
+
         doc = {
-            "full_name": name,
-            "name": name,
-            "roll_number": roll_number,
-            "email": email.lower().strip(),
-            "phone": phone,
+            "full_name": clean_name,
+            "name": clean_name,
+            "roll_number": clean_roll,
+            "email": clean_email,
+            "phone": clean_phone,
             "password_hash": password_hash,
             "role": role,
             "profile_image": None,
@@ -65,9 +70,13 @@ class MongoDB:
             "updated_at": now,
             "joined_date": today
         }
-        res = self.db.users.insert_one(doc)
-        doc['_id'] = res.inserted_id
-        return User.from_mongo(doc)
+        try:
+            res = self.db.users.insert_one(doc)
+            doc['_id'] = res.inserted_id
+            return User.from_mongo(doc)
+        except Exception as e:
+            print(f"Error creating user: {e}")
+            return None
 
     def get_user_by_id(self, user_id):
         if not user_id:
@@ -80,20 +89,35 @@ class MongoDB:
             return None
 
     def get_user_by_email(self, email):
-        if not email:
+        if not email or not isinstance(email, str):
             return None
-        doc = self.db.users.find_one({"email": email.lower().strip()})
+        clean_email = email.strip().lower()
+        if not clean_email:
+            return None
+        import re
+        escaped_email = re.escape(clean_email)
+        doc = self.db.users.find_one({"email": {"$regex": f"^{escaped_email}$", "$options": "i"}})
         return User.from_mongo(doc)
 
     def check_duplicate_email(self, email):
-        if not email:
+        if not email or not isinstance(email, str):
             return False
-        return self.db.users.find_one({"email": email.lower().strip()}) is not None
+        clean_email = email.strip().lower()
+        if not clean_email:
+            return False
+        import re
+        escaped_email = re.escape(clean_email)
+        return self.db.users.find_one({"email": {"$regex": f"^{escaped_email}$", "$options": "i"}}) is not None
 
     def check_duplicate_roll(self, roll_number):
-        if not roll_number:
+        if not roll_number or not isinstance(roll_number, str):
             return False
-        return self.db.users.find_one({"roll_number": roll_number.strip()}) is not None
+        clean_roll = roll_number.strip()
+        if not clean_roll:
+            return False
+        import re
+        escaped_roll = re.escape(clean_roll)
+        return self.db.users.find_one({"roll_number": {"$regex": f"^{escaped_roll}$", "$options": "i"}}) is not None
 
     def update_user_password(self, user_id, new_password_hash):
         try:

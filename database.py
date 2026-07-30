@@ -36,7 +36,7 @@ class Database:
 
         # Create unique indexes for users collection
         try:
-            db.users.create_index([("email", pymongo.ASCENDING)], unique=True)
+            db.users.create_index([("email", pymongo.ASCENDING)], unique=True, sparse=True)
             db.users.create_index([("roll_number", pymongo.ASCENDING)], unique=True, sparse=True)
             db.lost_items.create_index([("owner_id", pymongo.ASCENDING)])
             db.found_items.create_index([("owner_id", pymongo.ASCENDING)])

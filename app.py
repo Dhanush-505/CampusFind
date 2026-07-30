@@ -229,12 +229,12 @@ def register():
         return redirect(url_for('home'))
         
     if request.method == 'POST':
-        name = request.form.get('name')
-        roll_number = request.form.get('roll_number')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        role = request.form.get('role')
-        password = request.form.get('password')
+        name = (request.form.get('name') or '').strip()
+        roll_number = (request.form.get('roll_number') or '').strip()
+        email = (request.form.get('email') or '').strip().lower()
+        phone = (request.form.get('phone') or '').strip()
+        role = (request.form.get('role') or '').strip()
+        password = request.form.get('password') or ''
         
         # Validations
         if not (name and roll_number and email and phone and role and password):
@@ -255,7 +255,7 @@ def register():
             
         # Hash password and create user
         password_hash = generate_password_hash(password)
-        db.create_user(
+        created_user = db.create_user(
             name=name,
             roll_number=roll_number,
             email=email,
@@ -263,6 +263,11 @@ def register():
             password_hash=password_hash,
             role=role
         )
+
+        if not created_user:
+            flash('Failed to create account. Email or Roll Number may already exist.', 'danger')
+            return render_template('register.html')
+
         flash('Registration successful! Please login.', 'success')
         return redirect(url_for('login'))
         
