@@ -1424,6 +1424,15 @@ const currentUser = {
     name: currentUserName
 };
 
+// Image URL helper function
+function getImageUrl(image) {
+    if (!image) return '';
+    if (image.startsWith('http://') || image.startsWith('https://') || image.startsWith('/')) {
+        return image;
+    }
+    return `/static/uploads/${image}`;
+}
+
 // Modal zoom functions
 function openModal(src){ document.getElementById('imgModal').style.display='flex'; document.getElementById('modalImage').src=src; }
 function closeModal(){ document.getElementById('imgModal').style.display='none'; }
@@ -1630,8 +1639,9 @@ function filterAndSortItems() {
         // Image box element
         let imgHTML = '';
         if (item.image) {
+            const imgUrl = getImageUrl(item.image);
             imgHTML = `<div class="item-card-image-box">
-              <img src="/static/uploads/${item.image}" class="item-card-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'item-placeholder-img\\'><i class=\\'fa-solid fa-box\\'></i></div>';">
+              <img src="${imgUrl}" class="item-card-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'item-placeholder-img\\'><i class=\\'fa-solid fa-box\\'></i></div>';">
             </div>`;
         } else {
             imgHTML = `<div class="item-card-image-box">
@@ -1721,8 +1731,9 @@ function openDetailsModal(itemId) {
     
     let imgHTML = '';
     if (item.image) {
+        const imgUrl = getImageUrl(item.image);
         imgHTML = `<div class="modal-image-box">
-          <img src="/static/uploads/${item.image}" class="modal-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'modal-placeholder-img\\'><i class=\\'fa-solid fa-box-open\\'></i></div>';">
+          <img src="${imgUrl}" class="modal-image" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'modal-placeholder-img\\'><i class=\\'fa-solid fa-box-open\\'></i></div>';">
         </div>`;
     } else {
         imgHTML = `<div class="modal-placeholder-img"><i class="fa-solid fa-box-open"></i></div>`;
@@ -1909,6 +1920,10 @@ function setupFormSubmit(formId, wrapperId, previewId, contentId, inputId) {
           if (previewId && contentId) {
               document.getElementById(previewId).style.display = 'none';
               document.getElementById(contentId).style.display = 'block';
+          }
+          if (inputId) {
+              const fileIn = document.getElementById(inputId);
+              if (fileIn) fileIn.value = '';
           }
           // Collapse active form container
           document.getElementById(wrapperId).classList.remove('active');

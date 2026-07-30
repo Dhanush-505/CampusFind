@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, send_from_directory
 import os
+import uuid
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from config import Config
@@ -10,9 +11,16 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = Config.UPLOAD_FOLDER
 app.secret_key = Config.SECRET_KEY
 
+def get_upload_folder():
+    folder = app.config.get('UPLOAD_FOLDER', 'static/uploads')
+    if not os.path.isabs(folder):
+        folder = os.path.abspath(os.path.join(app.root_path, folder))
+    if not os.path.exists(folder):
+        os.makedirs(folder, exist_ok=True)
+    return folder
+
 # Ensure upload folder exists
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+get_upload_folder()
 
 # Ensure default placeholder image exists
 images_dir = os.path.join(app.root_path, 'static', 'images')
@@ -24,7 +32,7 @@ if not os.path.exists(placeholder_path) and os.path.exists(logo_path):
 
 @app.route('/static/uploads/<path:filename>')
 def serve_upload(filename):
-    upload_folder = app.config['UPLOAD_FOLDER']
+    upload_folder = get_upload_folder()
     file_path = os.path.join(upload_folder, filename)
     if os.path.exists(file_path):
         return send_from_directory(upload_folder, filename)
@@ -88,8 +96,11 @@ def add_item():
 
     filename = None
     if file and file.filename != '':
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        sec_name = secure_filename(file.filename)
+        ext = os.path.splitext(sec_name)[1]
+        filename = f"{uuid.uuid4().hex}_{sec_name}" if sec_name else f"{uuid.uuid4().hex}{ext}"
+        upload_folder = get_upload_folder()
+        filepath = os.path.join(upload_folder, filename)
         file.save(filepath)
 
     # Use session variables for creator info to prevent impersonation
@@ -194,8 +205,11 @@ def edit_item(item_id):
 
     filename = None
     if file and file.filename != '':
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        sec_name = secure_filename(file.filename)
+        ext = os.path.splitext(sec_name)[1]
+        filename = f"{uuid.uuid4().hex}_{sec_name}" if sec_name else f"{uuid.uuid4().hex}{ext}"
+        upload_folder = get_upload_folder()
+        filepath = os.path.join(upload_folder, filename)
         file.save(filepath)
 
     db.update_item(
